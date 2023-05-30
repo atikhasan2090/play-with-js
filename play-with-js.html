@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
+ 
+    <style>
+        #canvas {
+            background-color: black;
+            height: 100vh;
+            width: 100vw;
+            padding: 10px;
+        }
+        .shape {
+            border: 1px solid white;
+            position: absolute;
+        }
+        .rectangle {
+            background-color: red;
+        }
+        .circle {
+            background-color: blue;
+            border-radius: 50%;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div style="display:none;">
+                <div>
+                    <label for="width">Width:</label>
+                    <input type="number" id="width" min="1" value="100">
+                </div>
+                <div>
+                    <label for="height">Height:</label>
+                    <input type="number" id="height" min="1" value="100">
+                </div>
+                <div>
+                    <label for="radius">Radius:</label>
+                    <input type="number" id="radius" min="1" value="50">
+                </div>
+                <div>
+                    <label for="xposition">X position:</label>
+                    <input type="number" id="xposition" min="0" value="0">
+                </div>
+                <div>
+                    <label for="yposition">Y position:</label>
+                    <input type="number" id="yposition" min="0" value="0">
+                </div>
+            </div>
+
+            <button onclick="drawRectangle()">Draw Rectangle</button>
+            <button onclick="drawCircle()">Draw Circle</button>
+            <button onclick="clearCanvas()">Clear Canvas</button>
+            <br><br>
+            <div id="rectangleInputGroup"></div>
+            <div id="circleInputGroup"></div>
+
+        </div>
+        <div class="col-md-6">
+            <div id="canvas"></div>
+        </div>
+    </div>
+
+
+
+    
+
+    <script>
+        var shapes = [];
+
+        function drawRectangle() {
+            var width = document.getElementById("width").value;
+            var height = document.getElementById("height").value;
+            var xposition = document.getElementById("xposition").value;
+            var yposition = document.getElementById("yposition").value;
+
+            var rectangle = document.createElement("div");
+            rectangle.classList.add("shape");
+            rectangle.classList.add("rectangle");
+            rectangle.style.width = width + "px";
+            rectangle.style.height = height + "px";
+            rectangle.style.transform = "translate(" + xposition + "px, " + yposition + "px)";
+
+            var canvas = document.getElementById("canvas");
+            canvas.appendChild(rectangle);
+
+            shapes.push(rectangle);
+
+            addShapeInputGroup(rectangle);
+        }
+
+        function drawCircle() {
+            var radius = document.getElementById("radius").value;
+            var xposition = document.getElementById("xposition").value;
+            var yposition = document.getElementById("yposition").value;
+
+            var circle = document.createElement("div");
+            circle.classList.add("shape");
+            circle.classList.add("circle");
+            circle.style.width = radius * 2 + "px";
+            circle.style.height = radius * 2 + "px";
+            circle.style.borderRadius = "50%";
+            circle.style.transform = "translate(" + xposition + "px, " + yposition + "px)";
+
+            var canvas = document.getElementById("canvas");
+            canvas.appendChild(circle);
+
+            shapes.push(circle);
+
+            addShapeInputGroup(circle);
+        }
+
+        function addShapeInputGroup(shape) {
+            var shapeInputGroup = shape.classList.contains("rectangle") ? document.getElementById("rectangleInputGroup") : document.getElementById("circleInputGroup");
+
+            var shapeInputDiv = document.createElement("div");
+            shapeInputDiv.style.marginBottom = "10px";
+
+            var widthLabel = document.createElement("label");
+            widthLabel.textContent = "Width:";
+            var widthInput = document.createElement("input");
+            widthInput.type = "number";
+            widthInput.min = "1";
+            widthInput.value = parseInt(shape.style.width);
+            widthInput.oninput = function() {
+                shape.style.width = this.value + "px";
+            };
+
+            var heightLabel = document.createElement("label");
+            heightLabel.textContent = "Height:";
+            var heightInput = document.createElement("input");
+            heightInput.type = "number";
+            heightInput.min = "1";
+            heightInput.value = parseInt(shape.style.height);
+            heightInput.oninput = function() {
+                shape.style.height = this.value + "px";
+            };
+
+            var radiusLabel = document.createElement("label");
+            radiusLabel.textContent = "Radius:";
+            var radiusInput = document.createElement("input");
+            radiusInput.type = "number";
+            radiusInput.min = "1";
+            radiusInput.value = parseInt(shape.style.width) / 2;
+            radiusInput.oninput = function() {
+                shape.style.width = this.value * 2 + "px";
+                shape.style.height = this.value * 2 + "px";
+            };
+
+            var xPositionLabel = document.createElement("label");
+            xPositionLabel.textContent = "X position:";
+            var xPositionInput = document.createElement("input");
+            xPositionInput.type = "number";
+            xPositionInput.min = "0";
+            xPositionInput.value = parseInt(shape.style.transform.split(",")[0].split("(")[1]);
+            xPositionInput.oninput = function() {
+                var currentPosition = shape.style.transform.split(",");
+                currentPosition[0] = "translate(" + this.value + "px";
+                shape.style.transform = currentPosition.join(",");
+            };
+
+            var yPositionLabel = document.createElement("label");
+            yPositionLabel.textContent = "Y position:";
+            var yPositionInput = document.createElement("input");
+            yPositionInput.type = "number";
+            yPositionInput.min = "0";
+            yPositionInput.value = parseInt(shape.style.transform.split(",")[1]);
+            yPositionInput.oninput = function() {
+                var currentPosition = shape.style.transform.split(",");
+                currentPosition[1] = this.value + "px)";
+                shape.style.transform = currentPosition.join(",");
+            };
+
+            var updateButton = document.createElement("button");
+            updateButton.textContent = "Update";
+            updateButton.onclick = function() {
+                shape.style.width = widthInput.value + "px";
+                shape.style.height = heightInput.value + "px";
+                var currentPosition = shape.style.transform.split(",");
+                currentPosition[0] = "translate(" + xPositionInput.value + "px";
+                currentPosition[1] = yPositionInput.value + "px)";
+                shape.style.transform = currentPosition.join(",");
+            };
+
+            var removeButton = document.createElement("button");
+            removeButton.textContent = "Remove";
+            removeButton.onclick = function() {
+                shape.remove();
+                shapeInputDiv.remove();
+                shapes.splice(shapes.indexOf(shape), 1);
+            };
+
+            shapeInputDiv.appendChild(widthLabel);
+            shapeInputDiv.appendChild(widthInput);
+            shapeInputDiv.appendChild(heightLabel);
+            shapeInputDiv.appendChild(heightInput);
+            shapeInputDiv.appendChild(radiusLabel);
+            shapeInputDiv.appendChild(radiusInput);
+            shapeInputDiv.appendChild(xPositionLabel);
+            shapeInputDiv.appendChild(xPositionInput);
+            shapeInputDiv.appendChild(yPositionLabel);
+            shapeInputDiv.appendChild(yPositionInput);
+            shapeInputDiv.appendChild(updateButton);
+            shapeInputDiv.appendChild(removeButton);
+
+            shapeInputGroup.appendChild(shapeInputDiv);
+        }
+
+       
+        function clearCanvas() {
+            var canvas = document.getElementById("canvas");
+            canvas.innerHTML = "";
+            shapes = [];
+            var rectangleInputGroup = document.getElementById("rectangleInputGroup");
+            var circleInputGroup = document.getElementById("circleInputGroup");
+            rectangleInputGroup.innerHTML = "";
+            circleInputGroup.innerHTML = "";
+        }
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
+ 
+</body>
+</html>
